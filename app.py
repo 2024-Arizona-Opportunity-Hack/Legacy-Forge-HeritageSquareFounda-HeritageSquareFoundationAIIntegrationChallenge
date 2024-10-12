@@ -3,10 +3,15 @@ import requests
 import json
 import firebase_admin
 from firebase_admin import credentials, auth
+import os
+from dotenv import load_dotenv
 
-# Firebase configuration
-FIREBASE_WEB_API_KEY = "AIzaSyDmieQrqLjTJzAhkLV9VpdLQNuVrUthvks"  # Replace with your Firebase Web API Key
-FIREBASE_CREDENTIALS_PATH = "hackathon-legacyforge-firebase-adminsdk-k8wly-b2a7c3c5e8.json"  # Replace with path to Firebase Admin SDK credentials
+# Load environment variables from the .env file
+load_dotenv()
+
+# Access the variables
+firebase_credentials_path = os.getenv("FIREBASE_CREDENTIALS_PATH")
+firebase_api_key = os.getenv("FIREBASE_API_KEY")
 
 # Initialize Firebase Admin SDK (for token verification)
 if not firebase_admin._apps:
