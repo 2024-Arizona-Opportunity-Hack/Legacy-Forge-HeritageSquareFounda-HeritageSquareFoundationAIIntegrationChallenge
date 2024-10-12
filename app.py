@@ -15,12 +15,12 @@ firebase_api_key = os.getenv("FIREBASE_API_KEY")
 
 # Initialize Firebase Admin SDK (for token verification)
 if not firebase_admin._apps:
-    cred = credentials.Certificate(FIREBASE_CREDENTIALS_PATH)
+    cred = credentials.Certificate(firebase_credentials_path)
     firebase_admin.initialize_app(cred)
 
 # Function to handle Google sign-in via Firebase
 def google_sign_in():
-    auth_url = f"https://identitytoolkit.googleapis.com/v1/accounts:signInWithIdp?key={FIREBASE_WEB_API_KEY}"
+    auth_url = f"https://identitytoolkit.googleapis.com/v1/accounts:signInWithIdp?key={firebase_api_key}"
     payload = {
         "postBody": "id_token=YOUR_GOOGLE_ID_TOKEN&providerId=google.com",
         "requestUri": "http://localhost",  # This can be any value
