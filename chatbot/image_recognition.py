@@ -1,125 +1,68 @@
-import json
 from PIL import Image
-import piexif
-from transformers import BlipProcessor, BlipForConditionalGeneration
-from langchain_community.chat_models import ChatOllama
-from langchain_community.vectorstores import Chroma
-from langchain.embeddings import HuggingFaceEmbeddings
-from io import BytesIO
+from transformers import DetrImageProcessor, DetrForObjectDetection
 import requests
-from googleapiclient.discovery import build
-import os
+from io import BytesIO
+import torch
 
-# Initialize the Ollama model (Llama 3.2 1b) with temperature setting
-llama_model = ChatOllama(model="llama3.2:1b", temperature=0.5)
+# Initialize the DETR model for object detection
+detection_processor = DetrImageProcessor.from_pretrained("facebook/detr-resnet-50")
+detection_model = DetrForObjectDetection.from_pretrained("facebook/detr-resnet-50")
 
-# Initialize the BLIP model to generate a description (caption) of the image
-blip_processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
-blip_model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base")
-
-# Function to download the image and its title from Google Drive
 def download_image_and_title_from_google_drive(drive_url):
+    # Modify the Google Drive URL to get the direct download link
     file_id = drive_url.split("/d/")[1].split("/")[0]
     download_url = f"https://drive.google.com/uc?export=download&id={file_id}"
+    
+    # Download the image using the direct download link
     response = requests.get(download_url)
-
+    
     # Extract file title from headers (content-disposition)
-    file_title = "Untitled"
+    file_title = "Untitled"  # Default if no title is available
     if 'content-disposition' in response.headers:
         content_disposition = response.headers['content-disposition']
         if 'filename=' in content_disposition:
             file_title = content_disposition.split("filename=")[1].strip('"')
-
-    img = Image.open(BytesIO(response.content))
-    return img, file_title
-
-# Function to extract metadata from an image
-def extract_image_metadata(image):
-    exif_data = piexif.load(image.info['exif']) if 'exif' in image.info else None
-    if exif_data:
-        metadata = {
-            'resolution': f"{image.size[0]}x{image.size[1]}",
-            'camera_make': exif_data['0th'].get(piexif.ImageIFD.Make, 'Unknown'),
-            'camera_model': exif_data['0th'].get(piexif.ImageIFD.Model, 'Unknown'),
-        }
+    
+    # Check if the response content is valid
+    if response.status_code == 200 and 'image' in response.headers.get('content-type', ''):
+        img = Image.open(BytesIO(response.content))
+        return img, file_title
     else:
-        metadata = {
-            'resolution': f"{image.size[0]}x{image.size[1]}",
-            'camera_make': 'Unknown',
-            'camera_model': 'Unknown',
-        }
-    return metadata
+        raise ValueError("Failed to download a valid image from the provided URL")
 
-# Function to generate description from BLIP model
-def generate_image_description(image):
-    inputs = blip_processor(image, return_tensors="pt")
-    out = blip_model.generate(**inputs)
-    description = blip_processor.decode(out[0], skip_special_tokens=True)
-    return description
+def detect_and_classify_image(image):
+    # Preprocess the image for object detection
+    inputs = detection_processor(images=image, return_tensors="pt")
 
-# Function to store image metadata and description in a vector database
-from langchain.docstore.document import Document  # Import the Document class
+    # Perform object detection using DETR
+    outputs = detection_model(**inputs)
+    
+    # Extract the bounding boxes and labels
+    target_sizes = torch.tensor([image.size[::-1]])  # DETR expects (height, width)
+    results = detection_processor.post_process_object_detection(outputs, target_sizes=target_sizes)[0]
 
-# Function to store image metadata and description in a vector database
-def store_image_in_vector_db(image_metadata, description, file_title):
-    # Convert metadata to a JSON string
-    metadata_str = json.dumps(image_metadata)
+    detected_objects = []
     
-    # Create Document objects for the vector store
-    docs = [
-        Document(page_content=description, metadata={"metadata": metadata_str, "title": file_title})
-    ]
+    # Iterate through detections and extract bounding boxes, labels, and scores
+    for score, label, box in zip(results["scores"], results["labels"], results["boxes"]):
+        # Only consider objects with confidence score > 0.5
+        if score > 0.5:
+            box = [round(i, 2) for i in box.tolist()]  # Convert box to list of rounded coordinates
+            detected_objects.append({
+                "label": detection_model.config.id2label[label.item()],  # Convert label id to label name
+                "score": round(score.item(), 3),  # Confidence score
+                "box": box  # Bounding box
+            })
     
-    # Use HuggingFace Embeddings instead of OpenAI API
-    embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
-    
-    # Create a vectorstore using Chroma
-    vectorstore = Chroma.from_documents(
-        documents=docs,
-        collection_name="image-metadata",
-        embedding=embedding_model
-    )
-    
-    return vectorstore
+    return detected_objects
 
-
-# Function to query Ollama model using the vector DB and metadata
-def interact_with_ollama_about_image(retriever, question):
-    # Retrieve context (metadata and description) for the question
-    retrieved_context = retriever.get_relevant_documents(question)
-    
-    # Create a conversational prompt
-    prompt = f"""
-    I have an image with the following details:
-    {retrieved_context}
-
-    Now, based on this, {question}
-    """
-    
-    # Pass the prompt to Ollama with temperature set to 0.5 for creativity
-    response = llama_model.invoke(prompt)
-    
-    return response
-
-# Example usage with a Google Drive URL
-google_drive_url = "https://drive.google.com/file/d/1E1bZssv3tepvf_VfGae5n-LtyTEdLefG/view?usp=drive_link"
+# Example usage
+google_drive_url = "https://drive.google.com/file/d/1E1bZssv3tepvf_VfGae5n-LtyTEdLefG/view"  # Replace with your Google Drive URL
 image, file_title = download_image_and_title_from_google_drive(google_drive_url)
 
-# Extract metadata and description
-metadata = extract_image_metadata(image)
-description = generate_image_description(image)
+# Detect and classify objects in the image
+detected_objects = detect_and_classify_image(image)
 
-# Store in vector DB
-vectorstore = store_image_in_vector_db(metadata, description, file_title)
-retriever = vectorstore.as_retriever()
-
-# Start querying loop
-while True:
-    question = input("Ask about the image (type 'q' to quit): ")
-
-    if question.lower() == 'q':
-        print("Exiting the query loop.")
-        break
-    
-    response = interact_with_ollama_about_image(retriever, question)
-    print(f"Ollama response: {response}")
+# Print the results
+print(f"File Title: {file_title}")
+print(f"Detected Objects: {detected_objects}")
