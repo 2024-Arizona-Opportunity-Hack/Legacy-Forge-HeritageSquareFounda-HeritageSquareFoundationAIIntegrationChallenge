@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { auth, googleProvider } from "./firebaseConfig.tsx";
 import { signInWithPopup } from "firebase/auth";
-import Message from './Message';
+import Message from '../../client/src/components/Message';
 import './App.css';
 
 const App = () => {
