@@ -68,6 +68,7 @@ const HomePage = ({serverData}: {serverData: string}) => {
           <div className='messages'>
             {messages}
           </div>
+          <div className='input-container'>
             <input
               type="text"
               className="prompt-input"
@@ -77,7 +78,16 @@ const HomePage = ({serverData}: {serverData: string}) => {
               placeholder="Type your message and press Enter"
               disabled={waitingForResponse}
             />
+
+            <img
+              src="/send-icon.svg"
+              alt="Send"
+              className="send-icon"
+              onClick={() => sendMessage(inputValue)}
+              style={{ cursor: 'pointer', width: '24px', height: '24px' }} // Adjust size as needed
+            />
           </div>
+        </div>
       </div>
 
       <div className={`login-overlay ${isAuthenticated ? 'invisible' : ''}`} >
