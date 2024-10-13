@@ -1,8 +1,14 @@
 from PIL import Image
 from transformers import BlipProcessor, BlipForConditionalGeneration
-from langchain_community.chat_models import ChatOllama
+from langchain_ollama import ChatOllama, OllamaEmbeddings  # Updated import statement
 import requests
 from io import BytesIO
+from langchain.text_splitter import CharacterTextSplitter   
+from langchain_community.vectorstores import Chroma
+from langchain.schema import Document   
+import numpy as np
+from sklearn.metrics.pairwise import cosine_similarity
+import pandas as pd
 
 # PART 1: Initialization of Models (Llama and BLIP)
 
@@ -42,13 +48,12 @@ class LlamaProject:
         inputs = self.blip_processor(images=image, return_tensors="pt")
         
         # Generate the description using the BLIP model with max_new_tokens
-        outputs = self.blip_model.generate(**inputs, max_new_tokens=20)  # Adjust '50' based on your needs
+        outputs = self.blip_model.generate(**inputs, max_new_tokens=50)  # Adjust '50' based on your needs
         
         # Decode the output to get the description
         description = self.blip_processor.decode(outputs[0], skip_special_tokens=True)
         
         return description
-
 
     def query_ollama_with_title_and_description(self, title, description):
         # Combine the title and description into a prompt
@@ -59,9 +64,49 @@ class LlamaProject:
         
         return response
 
+    def vectorize_and_store_metadata(self, title, description):
+        # Combine the title and description into a single string
+        combined_string = f"Title: {title}\nDescription: {description}"
+        
+        # Split the string into chunks (if needed) to handle large text
+        text_splitter = CharacterTextSplitter(chunk_size=7500, chunk_overlap=100)
+        chunks = text_splitter.split_text(combined_string)
+        documents = [Document(page_content=chunk) for chunk in chunks]
+
+        vectorstore = Chroma.from_documents(
+            documents=documents,
+            collection_name="rag-chroma",
+            embedding=OllamaEmbeddings(model='nomic-embed-text'),
+        )
+        retriever = vectorstore.as_retriever()
+        embeddings_data = vectorstore._collection.get(include=["embeddings"])
+        return embeddings_data["embeddings"]
+
+    def query_image_by_string(self, query_string):
+        # Step 1: Vectorize the query string
+        query_embedding = OllamaEmbeddings(model='nomic-embed-text').embed_query(query_string)
+        return query_embedding
+    
+    def find_closest_embedding(self, query_embedding, all_embeddings):
+        # Step 2: Calculate cosine similarity between the query and all stored embeddings
+        similarities = []
+        for embedding in all_embeddings:
+            # Cosine similarity between query and current embedding
+            similarity = cosine_similarity([query_embedding], [embedding])
+            similarities.append(similarity[0][0])  # similarity is a 2D array, we take the first element
+        
+        # Step 3: Find the index of the most similar embedding
+        closest_idx = np.argmax(similarities)  # Index of the highest similarity
+        return closest_idx, similarities[closest_idx]
+
+    def write_to_file(self, filename, text):
+        with open(filename, 'w') as file:  # 'w' mode will overwrite the file if it already exists
+            file.write(text)
+
 # PART 2: Processing Multiple Images with User Input
 
 def process_multiple_images(llama_project, image_urls):
+    all_embeddings = []
     for url in image_urls:
         try:
             # Download the image and its title
@@ -73,12 +118,32 @@ def process_multiple_images(llama_project, image_urls):
             # Combine the title and description and query Ollama for a refined description
             refined_description = llama_project.query_ollama_with_title_and_description(title, metadata_description)
             
-            # Output the results
-            print(f"\nFile Title: {title}")
-            print(f"Generated Metadata Description: {metadata_description}")
+            # Append the title and description to the CSV file
+            append_to_csv('data_read.csv', title, metadata_description)
+            
+            x = (f"Title: {title}\nDescription: {metadata_description}")
+            llama_project.write_to_file('../imageinfo.txt', x)
         
         except Exception as e:
             print(f"Error processing image from URL {url}: {str(e)}")
+
+def append_to_csv(filename, title, description):
+    # Read the existing CSV file
+    try:
+        df = pd.read_csv(filename)
+    except FileNotFoundError:
+        df = pd.DataFrame(columns=['Title', 'Content'])
+    
+    # Append the new data
+    new_data = pd.DataFrame([[title, description]], columns=['Title', 'Content'])
+    df = pd.concat([df, new_data], ignore_index=True)
+    
+    # Drop rows with NaN values
+    df.dropna(subset=['Content'], inplace=True)
+    
+    # Write the updated DataFrame back to the CSV file
+    df.to_csv(filename, index=False)
+    print(f"Appended data to {filename} successfully.")
 
 # Get User Input for Multiple Google Drive URLs
 def get_user_input_for_urls():
