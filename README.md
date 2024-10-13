@@ -17,9 +17,13 @@ LegacyForge is a technology designed to simplify file retrieval for the Google D
 Our project includes 2-factor Google Authentication with connection with Google Drive API 
 
 ## Technologies:
-Project is created with:
-Python version 3.12.6
-Typescript 
+-Project is created with:
+-Typescript 
+-Tailwind CSS
+-Python Flask 3.12.6
+-React.js
+-Next.js
+-Google APIs (Drive)
 
 ## Conflicts_We_Faced
 
