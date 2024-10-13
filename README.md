@@ -25,12 +25,12 @@ Our project includes 2-factor Google Authentication with connection with Google 
 
 ## Technologies:
 Project is created with: <br/>
-*Typescript <br/>
-*Tailwind CSS<br/>
-*Python Flask 3.12.6<br/>
-*React.js<br/>
-*Next.js<br/>
-*Google APIs (Drive)<br/>
+* Typescript <br/>
+* Tailwind CSS<br/>
+* Python Flask 3.12.6<br/>
+* React.js<br/>
+* Next.js<br/>
+* Google APIs (Drive)<br/>
 
 ## Conflicts_We_Faced
 
