@@ -4,27 +4,19 @@ import { signInWithPopup } from 'firebase/auth';
 import React, { useState } from 'react';
 
 import '../../App.css'
-import Message from '../../components/Message';
+import LogIn from '@/components/LogIn';
+import Message from '@/components/Message';
 
 
 const HomePage = ({serverData}: {serverData: string}) => {
-  const [loading, setLoading] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [waitingForResponse, setWaitingForResponse] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const [messages, setMessages] = useState<JSX.Element[]>([]);
 
-  const authWithGoogle = async () => {
-    setLoading(true);
-    try {
-        await signInWithPopup(auth, googleProvider);
-        setIsAuthenticated(true);
-    } catch {
-        console.log("Invalid");
-    } finally {
-      setLoading(false);
-    }
-  }
+  const handleLogin = () => {
+    setIsAuthenticated(true);
+  };
 
   const sendMessage = async (text: string) => {
     if (text.length === 0) {
@@ -90,11 +82,7 @@ const HomePage = ({serverData}: {serverData: string}) => {
         </div>
       </div>
 
-      <div className={`login-overlay ${isAuthenticated ? 'invisible' : ''}`} >
-        {isAuthenticated ? ( <></> ) : (
-          <button onClick={ () => authWithGoogle() } disabled={ loading }>{loading ? "Logging in..." : "Log in with Google"}</button>
-        )}
-      </div>
+      <LogIn handleLogin={handleLogin} isAuthenticated={isAuthenticated}/>
     </div>       
   )
 }
