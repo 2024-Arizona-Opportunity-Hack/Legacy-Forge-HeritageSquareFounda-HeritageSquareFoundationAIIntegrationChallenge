@@ -23,11 +23,14 @@ const App = () => {
     <div>
       <div className={`app-container ${isAuthenticated ? '' : 'blurred'}`}>
         <div className='chat-interface'>
-          <h1>Logged in</h1>
+          <div className='messages'>
+
+          </div>
+          <input className='prompt-input' placeholder="Type your message..."/>
         </div>
       </div>
 
-      <div className='login-overlay'>
+      <div className={`login-overlay ${isAuthenticated ? 'invisible' : ''}`} >
         {isAuthenticated ? ( <></> ) : (
           <button onClick={ () => authWithGoogle() } disabled={ loading }>{loading ? "Logging in..." : "Log in with Google"}</button>
         )}
