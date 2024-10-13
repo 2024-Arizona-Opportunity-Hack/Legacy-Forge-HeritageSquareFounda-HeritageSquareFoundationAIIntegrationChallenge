@@ -78,6 +78,33 @@ button:hover:not(:disabled) {
     overflow-y: auto;
 }
 
+/* The scrollbar container */
+.messages::-webkit-scrollbar {
+    width: 12px; /* Width of the scrollbar */
+}
+
+/* The scrollbar track (background) */
+.messages::-webkit-scrollbar-track {
+    background: #434343; /* Darker background for the track */
+    border-radius: 6px; /* Rounded edges for the track */
+}
+
+/* The scrollbar thumb (the draggable part) */
+.messages::-webkit-scrollbar-thumb {
+    background: #282828; /* Color of the scrollbar thumb */
+    border-radius: 6px; /* Rounded edges for the thumb */
+}
+
+/* The scrollbar thumb on hover */
+.messages::-webkit-scrollbar-thumb:hover {
+    background: #303030; /* Slightly darker color on hover */
+}
+
+/* The scrollbar button (the arrows, if shown) */
+.messages::-webkit-scrollbar-button {
+    display: none; /* Hide the scrollbar buttons (optional) */
+}
+
 .input-container {
     width: 100%;
     margin: 20px 0;
@@ -93,6 +120,10 @@ button:hover:not(:disabled) {
 .input-container:focus-within {
     border-color: #4285f4; /* Blue border on focus for Google-style highlight */
     box-shadow: 0 0 8px rgba(66, 133, 244, 0.6); /* Glow effect on focus */
+}
+
+.input-container.disabled {
+    background-color: #202020; /* Darker background when disabled */
 }
 
 .prompt-input {

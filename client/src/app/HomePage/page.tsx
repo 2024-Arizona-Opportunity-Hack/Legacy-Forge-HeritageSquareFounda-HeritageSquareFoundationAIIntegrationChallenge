@@ -68,7 +68,7 @@ const HomePage = ({serverData}: {serverData: string}) => {
           <div className='messages'>
             {messages}
           </div>
-          <div className='input-container'>
+          <div className={`input-container ${waitingForResponse ? 'disabled' : ''}`}>
             <input
               type="text"
               className="prompt-input"
@@ -80,7 +80,7 @@ const HomePage = ({serverData}: {serverData: string}) => {
             />
 
             <img
-              src="/send-icon.svg"
+              src={`${waitingForResponse ? '/send-icon-dark.svg' : '/send-icon.svg'}`}
               alt="Send"
               className="send-icon"
               onClick={() => sendMessage(inputValue)}
