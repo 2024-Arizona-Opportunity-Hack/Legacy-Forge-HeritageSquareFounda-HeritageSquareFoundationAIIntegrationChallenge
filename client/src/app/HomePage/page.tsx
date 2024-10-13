@@ -2,7 +2,7 @@
 import { auth, googleProvider } from '@/firebaseConfig';
 import { signInWithPopup } from 'firebase/auth';
 import React, { useState } from 'react';
-
+import ChatFileUpload from '@/components/ChatFile';
 import '../../App.css'
 import Message from '../../components/Message';
 
@@ -69,6 +69,7 @@ const HomePage = ({serverData}: {serverData: string}) => {
             {messages}
           </div>
           <div className={`input-container ${waitingForResponse ? 'disabled' : ''}`}>
+            <ChatFileUpload/>
             <input
               type="text"
               className="prompt-input"
