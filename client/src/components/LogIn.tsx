@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '../firebaseConfig'; // Adjust the import path as necessary
 
+import './LogIn.css';
+
 const LogIn: React.FC<{ handleLogin: () => void; isAuthenticated: boolean }> = ({ handleLogin, isAuthenticated }) => {
     const [loading, setLoading] = useState(false);
 
