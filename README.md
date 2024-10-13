@@ -13,7 +13,7 @@ LegacyForge is a technology designed to simplify file retrieval for the Google D
 
 ## Installation
 The dependencies for this project are included in `requirements.txt` <br/>
-For hosting on your local server clone the github repository into the folder of your choice
+For hosting on your local server clone the github repository into the folder of your choice <br/>
 Next, execute the command: `cd ./Legacy-Forge-HeritageSquareFounda-HeritageSquareFoundationAIIntegrationChallenge/client` <br/>
 Make sure you have Node installed on your machine. <br/>
 Inside your terminal, execute the command `npm install` <br/>
