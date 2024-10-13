@@ -8,4 +8,8 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     max-width: 80%;
     font-family: Arial, sans-serif;
+    word-wrap: break-word; /* Allows long words to break and wrap */
+    word-break: break-word; /* Ensures long words are broken properly */
+    overflow-wrap: break-word; /* Additional property to prevent overflow */
+    white-space: normal; /* Ensure the text wraps instead of being on a single line */
 }
