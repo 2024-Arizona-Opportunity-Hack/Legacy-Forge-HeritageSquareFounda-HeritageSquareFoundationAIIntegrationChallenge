@@ -9,7 +9,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain.output_parsers import PydanticOutputParser
 from langchain.text_splitter import CharacterTextSplitter
 
-model_local = ChatOllama(model="llama3.2:1b")
+# model_local = ChatOllama(model="llama3.2:1b")
 
 # 1. Split data into chunks
 urls = [
@@ -29,15 +29,7 @@ vectorstore = Chroma.from_documents(
 )
 retriever = vectorstore.as_retriever()
 
-# 3. Before RAG
-print("Before RAG\n")
-before_rag_template = "What is {topic}"
-before_rag_prompt = ChatPromptTemplate.from_template(before_rag_template)
-before_rag_chain = before_rag_prompt | model_local | StrOutputParser()
-print(before_rag_chain.invoke({"topic": "Ohack"}))
-
 # 4. After RAG
-print("\n########\nAfter RAG\n")
 after_rag_template = """Answer the question based only on the following context:
 {context}
 Question: {question}
@@ -50,6 +42,3 @@ after_rag_chain = (
     | StrOutputParser()
 )
 print(after_rag_chain.invoke("What is OHack?"))
-
-# loader = PyPDFLoader("Ollama.pdf")
-# doc_splits = loader.load_and_split()
