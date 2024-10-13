@@ -32,6 +32,7 @@ const HomePage = ({serverData}: {serverData: string}) => {
       setFile(true)
       
 
+
       // Send file to chatbot is going to be replaced by actual query 
       sendFileToChatbot(file);
       
@@ -64,6 +65,7 @@ const HomePage = ({serverData}: {serverData: string}) => {
 
   };
   
+
 
   const handleLogin = () => {
     setIsAuthenticated(true);
