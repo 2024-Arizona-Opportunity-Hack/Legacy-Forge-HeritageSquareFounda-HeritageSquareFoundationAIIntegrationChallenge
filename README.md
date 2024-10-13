@@ -12,19 +12,17 @@
 LegacyForge is a technology designed to simplify file retrieval for the Google Drive belonging to the Heritage Square Foundation. This is done through the implementation of easy query of such files in response to keywords inputted by the user. The main usecase of the easy query is to find files that can be used to input into an LLM such as ChatGPT, to help the foundation’s leaders to write grant proposals at a steady pace.
 
 ## Installation
-The dependencies for this project are included in `requirements.txt` <br/>
 For hosting on your local server clone the github repository into the folder of your choice <br/>
 Next, execute the command: `cd ./Legacy-Forge-HeritageSquareFounda-HeritageSquareFoundationAIIntegrationChallenge/client` <br/>
 Make sure you have Node installed on your machine. <br/>
 Inside your terminal, execute the command `npm install` <br/>
 This will ensure that all of the necessary dependencies for LegacyForge are installed on your machine. <br/>
-Finally run the command `npm run dev` in your terminal, and it will pull up a link to your localhost. 
+Finally run the command `npm run dev` in your terminal, and it will pull up a link to your localhost. <br/>
+The server does not need to be booted up locally because it exists on an EC2 instance
 
 ## Features
+Given files, as well as photos, LegacyForge can return the appropriate files and photos to a user in response to a query <br/>
 Our project includes 2-factor Google Authentication with connection with Google Drive API 
-Ollama integration prompting where we can send an image in and Ollama is able to process it 
-
-
 
 ## Technologies:
 Project is created with: <br/>
@@ -34,9 +32,6 @@ Project is created with: <br/>
 * React.js<br/>
 * Next.js<br/>
 * Google APIs (Drive)<br/>
-
-## Conflicts_We_Faced
-
 
 ## Judge_Criteria_for_Opportunity_Hackathon_2024
 
