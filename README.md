@@ -12,6 +12,8 @@
 LegacyForge is a technology designed to simplify file retrieval for the Google Drive belonging to the Heritage Square Foundation. This is done through the implementation of easy query of such files in response to keywords inputted by the user. The main usecase of the easy query is to find files that can be used to input into an LLM such as ChatGPT, to help the foundation’s leaders to write grant proposals at a steady pace.
 
 ## Installation
+The dependencies for this project are included in `**requirements.txt**`
+For hosting on your local server clone the github repository and cd into the directory /client. Make sure you have Node installed on your machine. Using the Node package manager and type the command “npm install”. After that you’ll have all the dependencies installed on your machine. Finally run the command npm run dev and it will pull up a link to your localhost. 
 
 ## Features
 Our project includes 2-factor Google Authentication with connection with Google Drive API 
