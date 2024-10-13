@@ -4,10 +4,10 @@ import { signInWithPopup } from 'firebase/auth';
 import React, { useState } from 'react';
 
 import '../../src/App.css'
-import Message from './Message';
+import Message from '../../components/Message';
 
 
-const LoginPage = () => {
+const HomePage = () => {
   const [loading, setLoading] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [inputValue, setInputValue] = useState('');
@@ -66,4 +66,4 @@ const LoginPage = () => {
     </div>       
   )
 }
-export default LoginPage;
+export default HomePage;
