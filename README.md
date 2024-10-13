@@ -1,7 +1,12 @@
 
 
 ## Table of Contents
+[Overview](#Overview)
 [Installation](#Installation)
+[Features](#Features)
+[Technologies](#Technologies)
+[Conflicts We Faced](#Conflicts_We_Faced)
+[Judge Criteria for Opportunity Hackathon 2024](# Judge_Criteria_for_Opportunity_Hackathon_2024)
 
 ## Overview
 LegacyForge is a technology designed to simplify file retrieval for the Google Drive belonging to the Heritage Square Foundation. This is done through the implementation of easy query of such files in response to keywords inputted by the user. The main usecase of the easy query is to find files that can be used to input into an LLM such as ChatGPT, to help the foundation’s leaders to write grant proposals at a steady pace.
@@ -16,9 +21,9 @@ Project is created with:
 Python version 3.12.6
 Typescript 
 
-## Conflicts We Faced
+## Conflicts_We_Faced
 
-## Judge Criteria for Opportunity Hackathon 2024
+## Judge_Criteria_for_Opportunity_Hackathon_2024
 
 Scope of Solution:
 This solution was built to assist the Heritage Square Foundation with writing grant proposals, by helping them find files to feed into an LLM to write an initial draft. 
