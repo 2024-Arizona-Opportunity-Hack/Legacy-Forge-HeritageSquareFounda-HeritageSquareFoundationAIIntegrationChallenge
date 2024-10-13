@@ -42,7 +42,7 @@ class LlamaProject:
         inputs = self.blip_processor(images=image, return_tensors="pt")
         
         # Generate the description using the BLIP model with max_new_tokens
-        outputs = self.blip_model.generate(**inputs, max_new_tokens=50)  # Adjust '50' based on your needs
+        outputs = self.blip_model.generate(**inputs, max_new_tokens=20)  # Adjust '50' based on your needs
         
         # Decode the output to get the description
         description = self.blip_processor.decode(outputs[0], skip_special_tokens=True)
