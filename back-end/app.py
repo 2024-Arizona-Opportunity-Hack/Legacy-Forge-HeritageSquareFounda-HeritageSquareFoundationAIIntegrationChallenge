@@ -7,7 +7,7 @@ CORS(app)
 
 @app.route('/api/query', methods=['POST'])
 def query():
-    time.sleep(2)
+   
     data = request.get_json()
     query_param = data.get('query')
 

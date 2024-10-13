@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { gapi } from 'gapi-script';
 import './LogIn.css';
 
-const CLIENT_ID = '151430565938-rb6ioallg718pu5badedpnkanv4vei45.apps.googleusercontent.com';
-const SCOPES = 'https://www.googleapis.com/auth/drive.metadata.readonly';
+
+const CLIENT_ID = '651819070947-s3di6ljn1kt80gnmp8e1p4otka9s5ppo.apps.googleusercontent.com';
+const SCOPES = 'https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/drive.file';
+
 const DISCOVERY_DOCS = ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'];
 
 const LogIn: React.FC<{ handleLogin: () => void; isAuthenticated: boolean }> = ({ handleLogin, isAuthenticated }) => {
@@ -29,7 +31,9 @@ const LogIn: React.FC<{ handleLogin: () => void; isAuthenticated: boolean }> = (
             await authInstance.signIn(); // Trigger Google sign-in
             
             // After successful login, fetch permissions
-            const emails = await listPermissions("1Qjlzq--r-BPqDiJ0fl0jepFlNitWv1XF");
+
+            const emails = await listPermissions("1_RR7KyuQ-bIS1x7tvnxtfW-b-ibjGGWc");
+
 
             // Check if the user has the correct permission
             if (!emails.includes(authInstance.currentUser.get().getBasicProfile().getEmail())) {
@@ -54,7 +58,9 @@ const LogIn: React.FC<{ handleLogin: () => void; isAuthenticated: boolean }> = (
             });
             const permissions = response.result.permissions;
 
-            const emails = permissions.map(permission => permission.emailAddress);
+
+            const emails = permissions.map((permission: { emailAddress: any; }) => permission.emailAddress);
+
 
             return emails
 
@@ -76,4 +82,6 @@ const LogIn: React.FC<{ handleLogin: () => void; isAuthenticated: boolean }> = (
     );
 };
 
+
 export default LogIn;
+
